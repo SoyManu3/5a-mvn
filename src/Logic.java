@@ -8,8 +8,11 @@ public class Logic {
         if (intDOF <= 0) {
             throw new IllegalArgumentException("Los grados de libertad deben ser positivos");
         }
-        if (dblE <= 0.0) {
+        if (dblE <= 0.0 || !Double.isFinite(dblE)) {
             throw new IllegalArgumentException("La tolerancia debe ser positiva");
+        }
+        if (!Double.isFinite(dblX)) {
+            throw new IllegalArgumentException("El límite superior debe ser finito");
         }
 
         int segments = evenSegments(intNumSeg);
