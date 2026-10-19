@@ -3,6 +3,7 @@ public class SimpsonIntegration {
     private double dblW;
     private double dblE;
     private int intDOF;
+    private double dblInitial;
     private double dblX;
     private double[] dblTotXi;
     private double[] dblFirstBaseTerms;
@@ -13,16 +14,21 @@ public class SimpsonIntegration {
     private double dblFinalValue;
 
     public void computeW(int intNumSeg, double dblX) {
+        computeW(intNumSeg, 0.0, dblX);
+    }
+
+    public void computeW(int intNumSeg, double dblInitial, double dblFinal) {
         this.intNumSeg = evenSegments(intNumSeg);
-        this.dblX = dblX;
-        dblW = dblX / this.intNumSeg;
+        this.dblX = dblFinal;
+        dblW = (dblFinal - dblInitial) / this.intNumSeg;
+        this.dblInitial = dblInitial;
     }
 
     public void computeXi(int intNumSeg) {
         int segments = evenSegments(intNumSeg);
         dblTotXi = new double[segments + 1];
         for (int index = 0; index <= segments; index++) {
-            dblTotXi[index] = index * dblW;
+            dblTotXi[index] = dblInitial + index * dblW;
         }
     }
 

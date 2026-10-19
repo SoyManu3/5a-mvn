@@ -42,10 +42,12 @@ public class GammaFunction {
         }
 
         double t = shiftedValue + coefficients.length - 1.5;
+        // Calcular en espacio logarítmico evita el desbordamiento intermedio de
+        // t^(value - 0.5) para grados de libertad grandes.
         double logGamma = 0.5 * Math.log(2.0 * Math.PI)
-            + (shiftedValue + 0.5) * Math.log(t)
-            - t
-            + Math.log(sum);
+                + (shiftedValue + 0.5) * Math.log(t)
+                - t
+                + Math.log(sum);
         return Math.exp(logGamma);
     }
 }

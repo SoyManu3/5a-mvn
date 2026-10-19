@@ -46,6 +46,21 @@ class FiveATest {
     }
 
     @Test
+    void appCalculatesReferenceCaseOne() throws Exception {
+        assertEquals(0.3500586369, runApp(0.0, 1.1, 9), 1e-10);
+    }
+
+    @Test
+    void appCalculatesReferenceCaseTwo() throws Exception {
+        assertEquals(0.3675734052, runApp(0.0, 1.1812, 10), 1e-10);
+    }
+
+    @Test
+    void appCalculatesReferenceCaseThree() throws Exception {
+        assertEquals(0.4949998582, runApp(0.0, 2.750, 30), 1e-10);
+    }
+
+    @Test
     void simpsonUsesEvenSegmentsAndHandlesZero() {
         SimpsonIntegration integration = new SimpsonIntegration();
         integration.computeW(5, 0.0);
@@ -72,12 +87,21 @@ class FiveATest {
 
     @Test
     void appAndOutputWriteUtf8Result() throws Exception {
-        App.main(new String[] {"4", "1e-6", "12", "1.19"});
+        App.main(new String[] {"0", "1.19", "12"});
         assertTrue(Files.exists(Path.of("output.txt")));
 
         Path file = tempDirectory.resolve("result.txt");
         new output().writeData(file.toString(), "resultado: 0.5");
         assertEquals("resultado: 0.5", Files.readString(file, StandardCharsets.UTF_8));
+    }
+
+    private double runApp(double initialValue, double finalValue, int degreesOfFreedom) throws Exception {
+        App.main(new String[] {
+                Double.toString(initialValue),
+                Double.toString(finalValue),
+                Integer.toString(degreesOfFreedom)
+        });
+        return Double.parseDouble(Files.readString(Path.of("output.txt")));
     }
 
     private double integrate(double x, int degreesOfFreedom) {
