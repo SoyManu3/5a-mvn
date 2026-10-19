@@ -6,7 +6,7 @@ public class GammaFunction {
     }
 
     public void computeDblGamma(double doubleValue) {
-        if (doubleValue <= 0.0 || !Double.isFinite(doubleValue)) {
+        if (doubleValue <= 0.0 || Double.isNaN(doubleValue)) {
             throw new IllegalArgumentException("El argumento de gamma debe ser positivo");
         }
 
@@ -42,10 +42,9 @@ public class GammaFunction {
         }
 
         double t = shiftedValue + coefficients.length - 1.5;
-        double logGamma = 0.5 * Math.log(2.0 * Math.PI)
-            + (shiftedValue + 0.5) * Math.log(t)
-            - t
-            + Math.log(sum);
-        return Math.exp(logGamma);
+        return Math.sqrt(2.0 * Math.PI)
+                * Math.pow(t, shiftedValue + 0.5)
+                * Math.exp(-t)
+                * sum;
     }
 }

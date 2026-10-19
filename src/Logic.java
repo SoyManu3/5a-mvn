@@ -1,18 +1,16 @@
 public class Logic {
-    private int intNumSeg = 2;
-    private double dblE = 1.0e-8;
+    private int intNumSeg = 10;
+    private double dblE = 0.00001;
     private int intDOF = 1;
-    private double dblX = 1.0;
+    private double dblInitial = 0.0;
+    private double dblFinal = 1.0;
 
     public void logic1() {
         if (intDOF <= 0) {
             throw new IllegalArgumentException("Los grados de libertad deben ser positivos");
         }
-        if (dblE <= 0.0 || !Double.isFinite(dblE)) {
+        if (dblE <= 0.0) {
             throw new IllegalArgumentException("La tolerancia debe ser positiva");
-        }
-        if (!Double.isFinite(dblX)) {
-            throw new IllegalArgumentException("El límite superior debe ser finito");
         }
 
         int segments = evenSegments(intNumSeg);
@@ -21,7 +19,7 @@ public class Logic {
 
         do {
             SimpsonIntegration integration = new SimpsonIntegration();
-            integration.computeW(segments, dblX);
+            integration.computeW(segments, dblInitial, dblFinal);
             integration.computeXi(segments);
             integration.computeFirstBaseTerms(segments, integration.getXi(), intDOF);
             integration.computeExponent(intDOF);
@@ -44,10 +42,27 @@ public class Logic {
     }
 
     public void setData(int intNumSeg, double dblE, int intDOF, double dblX) {
-        this.intNumSeg = intNumSeg;
+        this.intNumSeg = 10;
         this.dblE = dblE;
         this.intDOF = intDOF;
-        this.dblX = dblX;
+        this.dblInitial = 0.0;
+        this.dblFinal = dblX;
+    }
+
+    public void setData(int intNumSeg, int intDOF, double dblX) {
+        this.intNumSeg = 10;
+        this.intDOF = intDOF;
+        this.dblInitial = 0.0;
+        this.dblFinal = dblX;
+        this.dblE = 0.00001;
+    }
+
+    public void setData(double dblInitial, double dblFinal, int intDOF) {
+        this.intNumSeg = 10;
+        this.dblE = 0.00001;
+        this.intDOF = intDOF;
+        this.dblInitial = dblInitial;
+        this.dblFinal = dblFinal;
     }
 
     private int evenSegments(int segments) {
