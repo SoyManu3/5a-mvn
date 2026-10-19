@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Logic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">3a</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Logic.java</span></div><h1>Logic.java</h1><pre class="source lang-java linenums"><span class="fc" id="L1">public class Logic {</span>
+<span class="fc" id="L2">    private int intNumSeg = 10;</span>
+<span class="fc" id="L3">    private double dblE = 0.00001;</span>
+<span class="fc" id="L4">    private int intDOF = 1;</span>
+<span class="fc" id="L5">    private double dblInitial = 0.0;</span>
+<span class="fc" id="L6">    private double dblFinal = 1.0;</span>
+
+    public void logic1() {
+<span class="fc bfc" id="L9" title="All 2 branches covered.">        if (intDOF &lt;= 0) {</span>
+<span class="fc" id="L10">            throw new IllegalArgumentException(&quot;Los grados de libertad deben ser positivos&quot;);</span>
+        }
+<span class="fc bfc" id="L12" title="All 4 branches covered.">        if (!Double.isFinite(dblE) || dblE &lt;= 0.0) {</span>
+<span class="fc" id="L13">            throw new IllegalArgumentException(&quot;La tolerancia debe ser positiva y finita&quot;);</span>
+        }
+<span class="fc bfc" id="L15" title="All 4 branches covered.">        if (!Double.isFinite(dblInitial) || !Double.isFinite(dblFinal)) {</span>
+<span class="fc" id="L16">            throw new IllegalArgumentException(&quot;Los límites de integración deben ser finitos&quot;);</span>
+        }
+
+<span class="fc" id="L19">        int segments = evenSegments(intNumSeg);</span>
+<span class="fc" id="L20">        double previousValue = Double.NaN;</span>
+        double currentValue;
+
+        do {
+<span class="fc" id="L24">            SimpsonIntegration integration = new SimpsonIntegration();</span>
+<span class="fc" id="L25">            integration.computeW(segments, dblInitial, dblFinal);</span>
+<span class="fc" id="L26">            integration.computeXi(segments);</span>
+<span class="fc" id="L27">            integration.computeFirstBaseTerms(segments, integration.getXi(), intDOF);</span>
+<span class="fc" id="L28">            integration.computeExponent(intDOF);</span>
+<span class="fc" id="L29">            integration.computeCoefficient(intDOF);</span>
+<span class="fc" id="L30">            integration.computeFxi(segments);</span>
+<span class="fc" id="L31">            integration.computeFinalTerms(segments);</span>
+<span class="fc" id="L32">            integration.computeFinalValue(segments);</span>
+<span class="fc" id="L33">            currentValue = integration.getFinalValue();</span>
+
+<span class="fc bfc" id="L35" title="All 4 branches covered.">            if (!Double.isNaN(previousValue) &amp;&amp; Math.abs(currentValue - previousValue) &lt; dblE) {</span>
+<span class="fc" id="L36">                output writer = new output();</span>
+<span class="fc" id="L37">                writer.writeData(&quot;output.txt&quot;, Double.toString(currentValue));</span>
+<span class="fc" id="L38">                intNumSeg = segments;</span>
+<span class="fc" id="L39">                return;</span>
+            }
+
+<span class="fc" id="L42">            previousValue = currentValue;</span>
+<span class="fc" id="L43">            segments *= 2;</span>
+<span class="fc" id="L44">        } while (true);</span>
+    }
+
+    public void setData(int intNumSeg, double dblE, int intDOF, double dblX) {
+<span class="fc" id="L48">        this.intNumSeg = intNumSeg;</span>
+<span class="fc" id="L49">        this.dblE = dblE;</span>
+<span class="fc" id="L50">        this.intDOF = intDOF;</span>
+<span class="fc" id="L51">        this.dblInitial = 0.0;</span>
+<span class="fc" id="L52">        this.dblFinal = dblX;</span>
+<span class="fc" id="L53">    }</span>
+
+    public void setData(int intNumSeg, int intDOF, double dblX) {
+<span class="fc" id="L56">        this.intNumSeg = intNumSeg;</span>
+<span class="fc" id="L57">        this.intDOF = intDOF;</span>
+<span class="fc" id="L58">        this.dblInitial = 0.0;</span>
+<span class="fc" id="L59">        this.dblFinal = dblX;</span>
+<span class="fc" id="L60">        this.dblE = 0.00001;</span>
+<span class="fc" id="L61">    }</span>
+
+    public void setData(double dblInitial, double dblFinal, int intDOF) {
+<span class="fc" id="L64">        this.intNumSeg = 10;</span>
+<span class="fc" id="L65">        this.dblE = 0.00001;</span>
+<span class="fc" id="L66">        this.intDOF = intDOF;</span>
+<span class="fc" id="L67">        this.dblInitial = dblInitial;</span>
+<span class="fc" id="L68">        this.dblFinal = dblFinal;</span>
+<span class="fc" id="L69">    }</span>
+
+    private int evenSegments(int segments) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (segments &lt; 2) {</span>
+<span class="fc" id="L73">            return 2;</span>
+        }
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        return segments % 2 == 0 ? segments : segments + 1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

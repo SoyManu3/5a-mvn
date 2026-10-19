@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: FiveATest
 -------------------------------------------------------------------------------
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.255 s -- in FiveATest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.260 s -- in FiveATest
