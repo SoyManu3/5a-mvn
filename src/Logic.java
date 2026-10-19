@@ -9,8 +9,11 @@ public class Logic {
         if (intDOF <= 0) {
             throw new IllegalArgumentException("Los grados de libertad deben ser positivos");
         }
-        if (dblE <= 0.0) {
-            throw new IllegalArgumentException("La tolerancia debe ser positiva");
+        if (!Double.isFinite(dblE) || dblE <= 0.0) {
+            throw new IllegalArgumentException("La tolerancia debe ser positiva y finita");
+        }
+        if (!Double.isFinite(dblInitial) || !Double.isFinite(dblFinal)) {
+            throw new IllegalArgumentException("Los límites de integración deben ser finitos");
         }
 
         int segments = evenSegments(intNumSeg);
@@ -42,7 +45,7 @@ public class Logic {
     }
 
     public void setData(int intNumSeg, double dblE, int intDOF, double dblX) {
-        this.intNumSeg = 10;
+        this.intNumSeg = intNumSeg;
         this.dblE = dblE;
         this.intDOF = intDOF;
         this.dblInitial = 0.0;
@@ -50,7 +53,7 @@ public class Logic {
     }
 
     public void setData(int intNumSeg, int intDOF, double dblX) {
-        this.intNumSeg = 10;
+        this.intNumSeg = intNumSeg;
         this.intDOF = intDOF;
         this.dblInitial = 0.0;
         this.dblFinal = dblX;
