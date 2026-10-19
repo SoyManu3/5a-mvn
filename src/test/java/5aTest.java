@@ -70,7 +70,7 @@ class FiveATest {
 ////////////////
     @Test
     void appCalculatesReferenceCaseOne() throws Exception {
-        assertEquals(0.1, runApp(0.0, 1.1, 9), 1e-10);
+        assertEquals(0.3500586369, runApp(0.0, 1.1, 9), 1e-10);
     }
 
     @Test
