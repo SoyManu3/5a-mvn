@@ -28,6 +28,9 @@ class FiveATest {
 
         gamma.computeDblGamma(0.5);
         assertEquals(Math.sqrt(Math.PI), gamma.getGammaValue(), 1e-10);
+
+        gamma.computeDblGamma(0.25);
+        assertEquals(3.625609908221908, gamma.getGammaValue(), 1e-10);
     }
 
     @Test
@@ -74,6 +77,11 @@ class FiveATest {
 
         assertEquals(6, integration.getXi().length - 1);
         assertEquals(0.0, integration.getFinalValue(), 1e-12);
+
+        SimpsonIntegration minimumSegments = new SimpsonIntegration();
+        minimumSegments.computeW(1, 0.0);
+        minimumSegments.computeXi(1);
+        assertEquals(3, minimumSegments.getXi().length);
     }
 
     @Test
@@ -83,6 +91,10 @@ class FiveATest {
         assertThrows(IllegalArgumentException.class, () -> runLogic(1.0, 10, 0.0));
         assertThrows(IllegalArgumentException.class, () -> runLogic(1.0, 10, Double.POSITIVE_INFINITY));
         assertThrows(IllegalArgumentException.class, () -> runLogic(Double.POSITIVE_INFINITY, 10, 1e-8));
+
+        Logic logic = new Logic();
+        logic.setData(Double.NaN, 1.0, 10);
+        assertThrows(IllegalArgumentException.class, logic::logic1);
     }
 
     @Test
@@ -93,6 +105,25 @@ class FiveATest {
         Path file = tempDirectory.resolve("result.txt");
         new output().writeData(file.toString(), "resultado: 0.5");
         assertEquals("resultado: 0.5", Files.readString(file, StandardCharsets.UTF_8));
+
+        assertThrows(IllegalStateException.class,
+                () -> new output().writeData(tempDirectory.toString(), "no se puede escribir en un directorio"));
+    }
+
+    @Test
+    void appUsesDefaultsAndLogicSupportsAllSetters() throws Exception {
+        new App();
+        App.main(new String[0]);
+        assertTrue(Files.exists(Path.of("output.txt")));
+
+        Logic logic = new Logic();
+        logic.setData(1, 10, 1.0);
+        logic.logic1();
+        assertTrue(Double.parseDouble(Files.readString(Path.of("output.txt"))) > 0.0);
+
+        logic.setData(11, 1e-5, 10, 1.0);
+        logic.logic1();
+        assertTrue(Double.parseDouble(Files.readString(Path.of("output.txt"))) > 0.0);
     }
 
     private double runApp(double initialValue, double finalValue, int degreesOfFreedom) throws Exception {

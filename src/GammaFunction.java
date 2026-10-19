@@ -12,7 +12,7 @@ public class GammaFunction {
 
         if (doubleValue < 0.5) {
             gammaValue = Math.PI
-                    / (Math.sin(Math.PI * doubleValue) * gamma(doubleValue + 1.0));
+                    / (Math.sin(Math.PI * doubleValue) * gamma(1.0 - doubleValue));
         } else {
             gammaValue = gamma(doubleValue);
         }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpsonIntegration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">3a</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">SimpsonIntegration.java</span></div><h1>SimpsonIntegration.java</h1><pre class="source lang-java linenums"><span class="fc" id="L1">public class SimpsonIntegration {</span>
+    private int intNumSeg;
+    private double dblW;
+    private double dblE;
+    private int intDOF;
+    private double dblInitial;
+    private double dblX;
+    private double[] dblTotXi;
+    private double[] dblFirstBaseTerms;
+    private double dblExponent;
+    private double dblCoeff;
+    private double[] dblFxi;
+    private double[] dblFinalTerms;
+    private double dblFinalValue;
+
+    public void computeW(int intNumSeg, double dblX) {
+<span class="fc" id="L17">        computeW(intNumSeg, 0.0, dblX);</span>
+<span class="fc" id="L18">    }</span>
+
+    public void computeW(int intNumSeg, double dblInitial, double dblFinal) {
+<span class="fc" id="L21">        this.intNumSeg = evenSegments(intNumSeg);</span>
+<span class="fc" id="L22">        this.dblX = dblFinal;</span>
+<span class="fc" id="L23">        dblW = (dblFinal - dblInitial) / this.intNumSeg;</span>
+<span class="fc" id="L24">        this.dblInitial = dblInitial;</span>
+<span class="fc" id="L25">    }</span>
+
+    public void computeXi(int intNumSeg) {
+<span class="fc" id="L28">        int segments = evenSegments(intNumSeg);</span>
+<span class="fc" id="L29">        dblTotXi = new double[segments + 1];</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        for (int index = 0; index &lt;= segments; index++) {</span>
+<span class="fc" id="L31">            dblTotXi[index] = dblInitial + index * dblW;</span>
+        }
+<span class="fc" id="L33">    }</span>
+
+    public double[] getXi() {
+<span class="fc" id="L36">        return dblTotXi;</span>
+    }
+
+    public void computeFirstBaseTerms(int intNumSeg, double[] dblTotXi, int intDOF) {
+<span class="fc" id="L40">        int segments = evenSegments(intNumSeg);</span>
+<span class="fc" id="L41">        dblFirstBaseTerms = new double[segments + 1];</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        for (int index = 0; index &lt;= segments; index++) {</span>
+<span class="fc" id="L43">            dblFirstBaseTerms[index] = 1.0</span>
+<span class="fc" id="L44">                    + (dblTotXi[index] * dblTotXi[index]) / intDOF;</span>
+        }
+<span class="fc" id="L46">    }</span>
+
+    public void computeExponent(int intDOF) {
+<span class="fc" id="L49">        dblExponent = -(intDOF + 1.0) / 2.0;</span>
+<span class="fc" id="L50">    }</span>
+
+    public void computeCoefficient(int intDOF) {
+<span class="fc" id="L53">        GammaFunction gammaFunction = new GammaFunction();</span>
+<span class="fc" id="L54">        gammaFunction.computeDblGamma((intDOF + 1.0) / 2.0);</span>
+<span class="fc" id="L55">        double numerator = gammaFunction.getGammaValue();</span>
+<span class="fc" id="L56">        gammaFunction.computeDblGamma(intDOF / 2.0);</span>
+<span class="fc" id="L57">        double denominator = Math.sqrt(intDOF * Math.PI) * gammaFunction.getGammaValue();</span>
+<span class="fc" id="L58">        dblCoeff = numerator / denominator;</span>
+<span class="fc" id="L59">    }</span>
+
+    public void computeFxi(int intNumSeg) {
+<span class="fc" id="L62">        int segments = evenSegments(intNumSeg);</span>
+<span class="fc" id="L63">        dblFxi = new double[segments + 1];</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (int index = 0; index &lt;= segments; index++) {</span>
+<span class="fc" id="L65">            dblFxi[index] = dblCoeff * Math.pow(dblFirstBaseTerms[index], dblExponent);</span>
+        }
+<span class="fc" id="L67">    }</span>
+
+    public void computeFinalTerms(int intNumSeg) {
+<span class="fc" id="L70">        int segments = evenSegments(intNumSeg);</span>
+<span class="fc" id="L71">        dblFinalTerms = new double[segments + 1];</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (int index = 0; index &lt;= segments; index++) {</span>
+<span class="fc bfc" id="L73" title="All 4 branches covered.">            if (index == 0 || index == segments) {</span>
+<span class="fc" id="L74">                dblFinalTerms[index] = dblFxi[index];</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            } else if (index % 2 == 0) {</span>
+<span class="fc" id="L76">                dblFinalTerms[index] = 2.0 * dblFxi[index];</span>
+<span class="fc" id="L77">            } else {</span>
+<span class="fc" id="L78">                dblFinalTerms[index] = 4.0 * dblFxi[index];</span>
+            }
+        }
+<span class="fc" id="L81">    }</span>
+
+    public void computeFinalValue(int intNumSeg) {
+<span class="fc" id="L84">        int segments = evenSegments(intNumSeg);</span>
+<span class="fc" id="L85">        double sum = 0.0;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (double term : dblFinalTerms) {</span>
+<span class="fc" id="L87">            sum += term;</span>
+        }
+        // Regla compuesta de Simpson: integral = (h / 3) por la suma ponderada.
+<span class="fc" id="L90">        dblFinalValue = (dblW / 3.0) * sum;</span>
+<span class="fc" id="L91">    }</span>
+
+    public double getFinalValue() {
+<span class="fc" id="L94">        return dblFinalValue;</span>
+    }
+
+    private int evenSegments(int segments) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (segments &lt; 2) {</span>
+<span class="fc" id="L99">            return 2;</span>
+        }
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        return segments % 2 == 0 ? segments : segments + 1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
